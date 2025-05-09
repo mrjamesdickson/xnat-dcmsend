@@ -1,0 +1,179 @@
+{
+  "name": "xnat-dcmsend",
+  "description": "Runs xnat-dcmsend",
+  "version": "1.0",
+  "schema-version": "1.0",
+  "image": "xnatworks/xnat-dcmsend:1.0",
+  "type": "docker",
+  "command-line": "dcmsend  #IPADDRESS# #PORT#  +r -aet #AET# -aec #AET# --scan-directories /input +sp *.dcm +v -v  ",
+  "override-entrypoint": true,
+  "mounts": [
+    {
+      "name": "input",
+      "writable": false,
+      "path": "/input"
+    }
+  ],
+  "environment-variables": {},
+  "ports": {},
+  "inputs": [
+    {
+      "name": "ipaddress",
+      "label": "ipaddress",
+      "description": "ipaddress",
+      "type": "select-one",
+      "default-value": "192.168.1.64",
+      "required": true,
+      "replacement-key": "#IPADDRESS#",
+      "command-line-flag": "",
+      "select-values": [
+        "192.168.1.64",
+        "192.168.1.64",
+        "192.168.1.64"
+      ]
+    },
+    {
+      "name": "port",
+      "label": "port number",
+      "description": "port number",
+      "type": "select-one",
+      "default-value": "4242",
+      "required": true,
+      "replacement-key": "#PORT#",
+      "command-line-flag": "",
+      "select-values": [
+        "4242",
+        "4242",
+        "4242"
+      ]
+    },
+    {
+      "name": "aec",
+      "label": "calling aetaetitle",
+      "description": "aeaect",
+      "type": "select-one",
+      "default-value": "XNAT",
+      "required": true,
+      "replacement-key": "#AEC#",
+      "command-line-flag": "",
+      "select-values": [
+        "XNAT"
+      ]
+    },
+    {
+      "name": "aet",
+      "label": "target aet",
+      "description": "aet",
+      "type": "select-one",
+      "default-value": "DCM4CHEE",
+      "required": true,
+      "replacement-key": "#AET#",
+      "command-line-flag": "",
+      "select-values": [
+        "DCM4CHEE"
+      ]
+    }
+  ],
+  "outputs": [],
+  "xnat": [
+    {
+      "name": "xnat-dcmsend-scan",
+      "description": "Run xnat-dcmsend for scans",
+      "contexts": [
+        "xnat:imageScanData"
+      ],
+      "external-inputs": [
+        {
+          "name": "scan",
+          "description": "Input scan",
+          "type": "Scan",
+          "required": true,
+          "provides-files-for-command-mount": "input",
+          "load-children": true
+        }
+      ],
+      "derived-inputs": [
+        {
+          "name": "Resource",
+          "description": "Select the scan resource.",
+          "type": "Resource",
+          "matcher": "",
+          "required": true,
+          "provides-value-for-command-input": "RESOURCE",
+          "load-children": true,
+          "derived-from-wrapper-input": "scan",
+          "multiple": false
+        }
+      ],
+      "output-handlers": []
+    },
+    {
+      "name": "xnat-dcmsend-session",
+      "description": "Run xnat-dcmsend for scans",
+      "contexts": [
+        "xnat:imageSessionData"
+      ],
+      "external-inputs": [
+        {
+          "name": "session",
+          "description": "Input session",
+          "type": "Session",
+          "required": true,
+          "provides-files-for-command-mount": "input",
+          "load-children": true
+        }
+      ],
+      "derived-inputs": [
+        {
+          "name": "session-id",
+          "description": "The session's id",
+          "type": "string",
+          "required": true,
+          "provides-value-for-command-input": "session_id",
+          "load-children": true,
+          "derived-from-wrapper-input": "session",
+          "derived-from-xnat-object-property": "id",
+          "multiple": false
+        },
+        {
+          "name": "session-label",
+          "description": "The session's label",
+          "type": "string",
+          "required": true,
+          "provides-value-for-command-input": "session_label",
+          "load-children": true,
+          "derived-from-wrapper-input": "session",
+          "derived-from-xnat-object-property": "label",
+          "multiple": false
+        },
+        {
+          "name": "subject-label",
+          "description": "The subject label",
+          "type": "Subject",
+          "required": true,
+          "provides-value-for-command-input": "subject_label",
+          "load-children": true,
+          "derived-from-wrapper-input": "session",
+          "derived-from-xnat-object-property": "label",
+          "multiple": false
+        },
+        {
+          "name": "project-id",
+          "description": "The project",
+          "type": "Project",
+          "required": true,
+          "provides-value-for-command-input": "project",
+          "load-children": true,
+          "derived-from-wrapper-input": "session",
+          "derived-from-xnat-object-property": "id",
+          "multiple": false
+        }
+      ],
+      "output-handlers": []
+    }
+  ],
+  "container-labels": {},
+  "generic-resources": {},
+  "ulimits": {},
+  "secrets": []
+}
